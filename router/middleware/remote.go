@@ -12,6 +12,7 @@ import (
 	"github.com/drone/drone/remote/gitlab"
 	"github.com/drone/drone/remote/gogs"
 	"github.com/gin-gonic/gin"
+	"github.com/drone/drone/remote/custom"
 )
 
 // Remote is a middleware function that initializes the Remote and attaches to
@@ -39,6 +40,8 @@ func setupRemote(c *cli.Context) (remote.Remote, error) {
 		return setupStash(c)
 	case c.Bool("gogs"):
 		return setupGogs(c)
+	case c.Bool("custom"):
+		return setupCustom(c)
 	default:
 		return nil, fmt.Errorf("version control system not configured")
 	}
@@ -101,5 +104,12 @@ func setupGithub(c *cli.Context) (remote.Remote, error) {
 		PrivateMode: c.Bool("github-private-mode"),
 		SkipVerify:  c.Bool("github-skip-verify"),
 		MergeRef:    c.BoolT("github-merge-ref"),
+	})
+}
+
+// helper function to setup the Custom remote from the CLI arguments.
+func setupCustom(c *cli.Context) (remote.Remote, error) {
+	return custom.New(custom.Opts{
+		URL:         c.String("custom-server"),
 	})
 }

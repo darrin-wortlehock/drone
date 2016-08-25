@@ -7,6 +7,19 @@ import (
 	"fmt"
 )
 
+type RemoteServer struct {
+	remote remote.Remote
+}
+
+func (r *RemoteServer) Repo(in RepoIn, out RepoOut) error {
+	repo, err := r.remote.Repo(in.User, in.Owner, in.Name)
+	if err != nil {
+		return err
+	}
+	out.Repo = repo
+}
+
+
 type Opts struct {
 	URL	string
 }
@@ -17,10 +30,10 @@ type client struct {
 
 
 func New(opts Opts) (remote.Remote, error) {
-	remote := &client{
+	client := &client{
 		URL:	opts.URL,
 	}
-	return remote, nil
+	return client, nil
 }
 
 func (c *client) Login(w http.ResponseWriter, r *http.Request) (*model.User, error) {
